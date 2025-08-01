@@ -1,6 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
@@ -12,7 +13,7 @@ app = FastAPI(
     title="ClauseMind - Intelligent Clause Retriever & Decision System",
     description="""
     🧠 **ClauseMind** - An intelligent system that uses LLM-powered semantic search to retrieve relevant clauses from insurance documents and provide automated decision-making.
-    
+
     ## Features:
     - **Document Upload**: Upload PDF insurance documents with drag & drop
     - **Auto Indexing**: Automatic embedding generation and FAISS indexing
@@ -20,14 +21,14 @@ app = FastAPI(
     - **LLM Reasoning**: Use Gemini to analyze clauses and make decisions
     - **Entity Extraction**: Automatically extract key information from queries
     - **Real-time Processing**: Background processing for large documents
-    
+
     ## Pipeline:
     1. PDF Upload → Text Extraction & Chunking
     2. User Query → Entity Extraction (Gemini)
     3. Query Embedding → FAISS Vector Search
     4. Retrieved Clauses → LLM Reasoning (Gemini)
     5. Structured Output → Decision + Justification
-    
+
     ## Tech Stack:
     - **Backend**: FastAPI (Async)
     - **Embeddings**: SentenceTransformers (MiniLM)
@@ -41,7 +42,7 @@ app = FastAPI(
     redoc_url="/redoc"
 )
 
-# Add CORS middleware
+# CORS setup
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # In production, specify your frontend domain
@@ -50,30 +51,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include routers
+# Routers
 app.include_router(query_router, prefix="/api/v1", tags=["ClauseMind API"])
 app.include_router(upload_router, prefix="/api/v1", tags=["Document Upload"])
 
-# Mount static files for frontend
-try:
-    app.mount("/frontend", StaticFiles(directory="frontend"), name="frontend")
-except Exception:
-    pass  # Directory might not exist yet
+# Template rendering setup
+templates = Jinja2Templates(directory="templates")
 
-@app.get("/", response_class=JSONResponse)
-async def root():
-    """Root endpoint with project information"""
-    return {
-        "message": "Welcome to ClauseMind - Intelligent Clause Retriever & Decision System",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "health": "/api/v1/health",
-        "description": "An LLM-powered system for intelligent document clause retrieval and decision making"
-    }
+# Mount static assets (if any)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
+# Serve HTML page on root URL
+@app.get("/", response_class=HTMLResponse)
+async def root(request: Request):
+    return templates.TemplateResponse("enhanced.html", {"request": request})
+
+# JSON API info endpoint
 @app.get("/api/v1", response_class=JSONResponse)
 async def api_info():
-    """API information endpoint"""
     return {
         "api_name": "ClauseMind API",
         "version": "1.0.0",
@@ -93,6 +88,7 @@ async def api_info():
         ]
     }
 
+# For local dev
 if __name__ == "__main__":
     uvicorn.run(
         "app.main:app",
@@ -100,4 +96,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True,
         log_level="info"
-    ) 
+    )
