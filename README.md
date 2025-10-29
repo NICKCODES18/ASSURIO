@@ -1,6 +1,5 @@
 ---
-
-# 🧠 Assurio – Intelligent Clause Retriever & Decision System
+🧠 Assurio – Intelligent Clause Retriever & Decision System
 
 **Assurio** is an AI-powered insurance assistant that enables users to upload PDF insurance documents, automatically indexes them using semantic embeddings, and allows natural language querying to retrieve relevant clauses and provide automated decisions.
 
