@@ -69,7 +69,7 @@
 ## 👤 Author
 
 **Nikunj Jain**
-📧 Email: [nikunjjainofficial@gmail.com](mailto:nikunjjain294@gmail.com)
+📧 Email: [nikunjjain294@gmail.com](mailto:nikunjjain294@gmail.com)
 🔗 LinkedIn: [https://www.linkedin.com/in/nikunjjain29/](https://www.linkedin.com/in/nikunjjain29/)
 
 ---
